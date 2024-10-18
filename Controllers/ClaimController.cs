@@ -64,12 +64,8 @@ public class ClaimsController : Controller
         _dbContext.Claims.Add(claim);
         await _dbContext.SaveChangesAsync();
 
-        return RedirectToAction("ClaimSubmitted");
-    }
-
-    public IActionResult ClaimSubmitted()
-    {
-        return View();
+        // Redirect directly to the Track Claims page
+        return RedirectToAction("TrackClaims");
     }
 
     [Authorize(Roles = "Co-ordinator,Manager")]
