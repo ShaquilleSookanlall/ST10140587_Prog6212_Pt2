@@ -145,14 +145,27 @@ public class ClaimsController : Controller
     }
 
     [Authorize(Roles = "Co-ordinator,Manager,Lecturer")]
-
     [HttpGet]
     public async Task<IActionResult> TrackClaims()
     {
         try
         {
-            var allClaims = await _dbContext.Claims.ToListAsync();
-            return View(allClaims);
+            IEnumerable<Claim> claims;
+
+            // If the user is a Co-ordinator or Manager, show all claims
+            if (User.IsInRole("Co-ordinator") || User.IsInRole("Manager"))
+            {
+                claims = await _dbContext.Claims.ToListAsync();
+            }
+            else // For Lecturers, show only their own claims
+            {
+                var userName = User.Identity.Name; // Get the logged-in user's username
+                claims = await _dbContext.Claims
+                    .Where(c => c.LecturerName == userName) // Filter claims by lecturer's name
+                    .ToListAsync();
+            }
+
+            return View(claims);
         }
         catch (Exception ex)
         {
@@ -161,6 +174,7 @@ public class ClaimsController : Controller
             return View("Error");
         }
     }
+
 
     [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpPost]
