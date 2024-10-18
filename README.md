@@ -1,10 +1,13 @@
 Contract Monthly Claim System (CMCS)
+
 Overview
+
 The Contract Monthly Claim System (CMCS) is a web-based application developed using ASP.NET Core MVC. It simplifies the process of submitting, tracking, and approving claims for Independent Contractor (IC) lecturers. The system streamlines the workflow for lecturers, coordinators, and managers, ensuring efficiency, transparency, and accountability. Through a role-based structure, CMCS provides distinct functionalities for each user type, ensuring a seamless claim management process.
 
 Lecturers can submit claims with attached supporting documents, track the status of their submissions, and view their claim history. Coordinators and managers are responsible for reviewing, approving, or rejecting these claims, ensuring their accuracy and completeness. The system reduces administrative overhead, allowing users to focus on more strategic activities.
 
 Lecturer Functions
+
 As the primary users, lecturers play a crucial role in initiating the claim process by submitting claims that reflect their work accurately. The system provides several features to support lecturers:
 
 1. Submit Claims with Supporting Documents
@@ -32,6 +35,7 @@ After verifying the hours worked and the attached supporting documents, coordina
 If discrepancies are found in a claim, such as incorrect hours or missing documents, coordinators and managers can reject it. The system allows them to provide feedback, helping the lecturer make the necessary corrections and resubmit the claim.
 
 Technical Overview
+
 The CMCS is developed using ASP.NET Core MVC, leveraging C# for backend functionality. It features role-based authentication, ensuring secure access to specific pages based on user roles (Lecturer, Coordinator, Manager). For the development phase, the system uses an in-memory database to store claims and user information. This can be replaced with an Azure SQL Database or SQL Server in a production environment.
 
 All uploaded documents are stored under the /wwwroot/uploads directory, making them easily accessible for review and reference.
@@ -59,6 +63,7 @@ Lecturer:
 Submit claims with supporting documents.
 Track claim statuses in real-time.
 Review rejected claims and resubmit corrections.
+
 Coordinator/Manager:
 
 Review and approve valid claims.
@@ -67,6 +72,7 @@ Ensure that the claim process is transparent and efficient.
 This workflow ensures that every claim is processed accurately and efficiently, maintaining accountability throughout the process.
 
 Error Handling and Validation
+
 To ensure a reliable user experience, CMCS includes comprehensive error handling and validation mechanisms:
 
 File Validation: Uploaded documents must be in PDF, DOCX, or XLSX format and must not exceed 5 MB in size.
