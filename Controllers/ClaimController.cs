@@ -8,29 +8,29 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+[Authorize]
 public class ClaimsController : Controller
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly long _maxFileSize = 5 * 1024 * 1024;
     private readonly string[] _allowedExtensions = { ".pdf", ".docx", ".xlsx" };
 
-
     public ClaimsController(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    [Authorize]
     [HttpGet]
     public IActionResult SubmitClaim()
     {
         return View();
     }
 
-
     [HttpPost]
     public async Task<IActionResult> SubmitClaim(Claim claim, IFormFile document)
     {
+        var userName = User.Identity.Name; // Get the logged-in user's username
+        claim.LecturerName = userName; // Assign the lecturer's name to the claim
 
         if (document != null && document.Length > 0)
         {
@@ -67,13 +67,10 @@ public class ClaimsController : Controller
         return RedirectToAction("ClaimSubmitted");
     }
 
-
-
     public IActionResult ClaimSubmitted()
     {
         return View();
     }
-
 
     [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpGet]
@@ -92,6 +89,35 @@ public class ClaimsController : Controller
         }
     }
 
+    [Authorize(Roles = "Co-ordinator,Manager,Lecturer")]
+    [HttpGet]
+    public async Task<IActionResult> TrackClaims()
+    {
+        try
+        {
+            IEnumerable<Claim> claims;
+
+            if (User.IsInRole("Co-ordinator") || User.IsInRole("Manager"))
+            {
+                claims = await _dbContext.Claims.ToListAsync(); // Co-ordinator/Manager can view all claims
+            }
+            else
+            {
+                var userName = User.Identity.Name; // Get the logged-in user's name
+                claims = await _dbContext.Claims
+                    .Where(c => c.LecturerName == userName) // Filter claims by LecturerName
+                    .ToListAsync();
+            }
+
+            return View(claims);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, "An error occurred while fetching the claims. Please try again later.");
+            Console.WriteLine(ex.Message);
+            return View("Error");
+        }
+    }
 
     [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpPost]
@@ -118,7 +144,6 @@ public class ClaimsController : Controller
         return RedirectToAction("ViewPendingClaims");
     }
 
-
     [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpPost]
     public async Task<IActionResult> RejectClaim(int id)
@@ -144,38 +169,6 @@ public class ClaimsController : Controller
         return RedirectToAction("ViewPendingClaims");
     }
 
-    [Authorize(Roles = "Co-ordinator,Manager,Lecturer")]
-    [HttpGet]
-    public async Task<IActionResult> TrackClaims()
-    {
-        try
-        {
-            IEnumerable<Claim> claims;
-
-            // If the user is a Co-ordinator or Manager, show all claims
-            if (User.IsInRole("Co-ordinator") || User.IsInRole("Manager"))
-            {
-                claims = await _dbContext.Claims.ToListAsync();
-            }
-            else // For Lecturers, show only their own claims
-            {
-                var userName = User.Identity.Name; // Get the logged-in user's username
-                claims = await _dbContext.Claims
-                    .Where(c => c.LecturerName == userName) // Filter claims by lecturer's name
-                    .ToListAsync();
-            }
-
-            return View(claims);
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError(string.Empty, "An error occurred while fetching the claims. Please try again later.");
-            Console.WriteLine(ex.Message);
-            return View("Error");
-        }
-    }
-
-
     [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpPost]
     public async Task<IActionResult> DeleteClaim(int id)
@@ -193,6 +186,4 @@ public class ClaimsController : Controller
             return View("Error");
         }
     }
-
-
 }
