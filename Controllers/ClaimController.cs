@@ -75,7 +75,7 @@ public class ClaimsController : Controller
     }
 
 
-    [Authorize(Roles = "Coordinator,Manager")]
+    [Authorize(Roles = "Co-ordinator,Manager")]
     [HttpGet]
     public async Task<IActionResult> ViewPendingClaims()
     {
