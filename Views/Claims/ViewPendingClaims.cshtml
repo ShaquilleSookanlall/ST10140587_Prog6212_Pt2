@@ -2,27 +2,29 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pending Claims for Approval</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+    <title>Approve Claims</title>
+    <link rel="stylesheet" href="~/css/dark-theme.css" />
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Pending Claims for Approval</h2>
 
-        @if (Model != null && Model.Count() > 0)
+<body>
+    <div class="container">
+        <h2 class="page-title">Pending Claims for Approval</h2>
+
+        @if (Model.Any())
         {
-            <table class="table table-striped table-hover table-bordered">
-                <thead class="table-dark">
+            <table class="table table-bordered">
+                <thead>
                     <tr>
                         <th>Lecturer Name</th>
                         <th>Hours Worked</th>
                         <th>Hourly Rate</th>
                         <th>Notes</th>
                         <th>Document</th>
-                        <th class="text-center">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,26 +33,19 @@
                         <tr>
                             <td>@claim.LecturerName</td>
                             <td>@claim.HoursWorked</td>
-                            <td>@claim.HourlyRate.ToString("C")</td> <!-- Format as currency -->
+                            <td>@claim.HourlyRate</td>
                             <td>@claim.Notes</td>
                             <td>
-                                <a href="@claim.DocumentPath" class="btn btn-link" target="_blank">
-                                    View Document
-                                </a>
+                                <a href="@claim.DocumentPath" target="_blank" class="btn btn-outline-dark">View</a>
                             </td>
-                            <td class="text-center">
-                                <form method="post" action="/Claims/ApproveClaim" class="d-inline">
+                            <td>
+                                <form method="post" action="/Claims/ApproveClaim" style="display:inline;">
                                     <input type="hidden" name="id" value="@claim.ClaimId" />
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Approve
-                                    </button>
+                                    <button type="submit" class="btn btn-success">Approve</button>
                                 </form>
-
-                                <form method="post" action="/Claims/RejectClaim" class="d-inline ms-2">
+                                <form method="post" action="/Claims/RejectClaim" style="display:inline;">
                                     <input type="hidden" name="id" value="@claim.ClaimId" />
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        Reject
-                                    </button>
+                                    <button type="submit" class="btn btn-danger">Reject</button>
                                 </form>
                             </td>
                         </tr>
@@ -60,12 +55,9 @@
         }
         else
         {
-            <div class="alert alert-info text-center">
-                No pending claims to display.
-            </div>
+            <p class="no-claims">No pending claims to display.</p>
         }
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
